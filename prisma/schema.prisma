@@ -1,0 +1,54 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Payment {
+  id                      String    @id @default(uuid())
+  studentId               String    @map("student_id")
+  guardianId              String    @map("guardian_id")
+  classId                 String?   @map("class_id")
+  studentName             String    @default("") @map("student_name")
+  guardianEmail           String    @default("") @map("guardian_email")
+  guardianName            String    @default("") @map("guardian_name")
+  title                   String
+  purpose                 String    @default("tuition")
+  description             String    @default("")
+  amount                  Float
+  amountPaid              Float     @default(0) @map("amount_paid")
+  currency                String    @default("USD")
+  method                  String    @default("stripe")
+  status                  String    @default("pending")
+  transactionId           String    @default("") @map("transaction_id")
+  receiptUrl              String    @default("") @map("receipt_url")
+  receiptEmailSentAt      DateTime? @map("receipt_email_sent_at")
+  term                    String    @default("")
+  academicYear            String    @default("") @map("academic_year")
+  dueDate                 DateTime? @map("due_date")
+  paidDate                DateTime? @map("paid_date")
+  notes                   String    @default("")
+  isActive                Boolean   @default(true) @map("is_active")
+
+  // Stripe fields
+  stripeCustomerId        String    @default("") @map("stripe_customer_id")
+  stripeInvoiceId         String    @default("") @map("stripe_invoice_id")
+  stripeHostedInvoiceUrl  String    @default("") @map("stripe_hosted_invoice_url")
+  stripeInvoicePdf        String    @default("") @map("stripe_invoice_pdf")
+  stripePaymentIntentId   String    @default("") @map("stripe_payment_intent_id")
+  stripeCheckoutSessionId String    @default("") @map("stripe_checkout_session_id")
+
+  createdAt               DateTime  @default(now()) @map("created_at")
+  updatedAt               DateTime  @updatedAt @map("updated_at")
+
+  @@index([status])
+  @@index([studentId, status])
+  @@index([guardianId, status])
+  @@index([stripeCheckoutSessionId])
+  @@index([stripeInvoiceId])
+  @@map("payments")
+}
+
