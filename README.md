@@ -16,36 +16,9 @@ A high-reliability, event-driven Payment and Invoicing microservice designed for
 
 ## Architecture & Data Flow
 
-```mermaid
-flowchart TD
-    subgraph PaymentService ["Payment Microservice (Port 5001)"]
-        PS["Express Controller & Stripe Service"]
-        Prisma["Prisma ORM Client"]
-        Neon[("Neon PostgreSQL DB")]
-        Pub["RabbitMQ Publisher"]
-        
-        PS --> Prisma --> Neon
-        PS -->|"On Payment Success"| Pub
-    end
-
-    subgraph MessageBroker ["CloudAMQP / RabbitMQ"]
-        Ex{{"Topic Exchange (school.events)"}}
-        Q[("Durable Queue (school.main.payment_events)")]
-        
-        Pub -->|"Publish: payment.completed"| Ex
-        Ex -->|"Routing: payment.*"| Q
-    end
-
-    subgraph CoreBackend ["Main School Monolith (Port 5000)"]
-        Sub["RabbitMQ Consumer"]
-        MongoDB[("MongoDB Atlas")]
-        Mail["Mailer Service"]
-        
-        Q -->|"Consume & Ack"| Sub
-        Sub -->|"Update Status"| MongoDB
-        Sub -->|"Send Receipt"| Mail
-    end
-```
+<p align="center">
+  <img src="./public/Diagram.jpg" alt="Architecture & Data Flow" width="100%">
+</p>
 
 ---
 
